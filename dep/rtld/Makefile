@@ -42,9 +42,9 @@ $(BUILDDIR)interpreter: $(BUILDDIR)load_test
 	$(eval INTERPRETER_NAME = $(shell $(READELF) -l $(BUILDDIR)load_test | perl -ne '/\[Requesting program interpreter: (.*)\/(.*)\]/ && print "$$2\n"'))
 	readlink -f $(shell $(CC) --print-file-name=$(INTERPRETER_NAME)) > $@
 $(BUILDDIR)rtld_global_size: $(BUILDDIR)interpreter
-	$(READELF) --dyn-syms $(shell cat $(BUILDDIR)interpreter) | grep rtld_global@ | awk '{ print $$3 }' > $@
+	$(READELF) --wide --dyn-syms $(shell cat $(BUILDDIR)interpreter) | grep rtld_global@ | awk '{ print $$3 }' > $@
 $(BUILDDIR)rtld_global_ro_size: $(BUILDDIR)interpreter
-	$(READELF) --dyn-syms $(shell cat $(BUILDDIR)interpreter) | grep rtld_global_ro@ | awk '{ print $$3 }' > $@
+	$(READELF) --wide --dyn-syms $(shell cat $(BUILDDIR)interpreter) | grep rtld_global_ro@ | awk '{ print $$3 }' > $@
 
 $(BUILDDIR)rtld.h: | depends
 	$(RUN_GDB) -x rtld.gdb $(shell cat $(BUILDDIR)interpreter) | grep -v 'done\.' | grep -v 'Reading symbols' \
